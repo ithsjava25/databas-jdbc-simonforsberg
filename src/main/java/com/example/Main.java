@@ -1,9 +1,11 @@
 package com.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 public class Main {
 
@@ -26,11 +28,146 @@ public class Main {
                             "as system properties (-Dkey=value) or environment variables.");
         }
 
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, dbUser, dbPass)) {
+        DataSource dataSource = new SimpleDriverManagerDataSource(jdbcUrl, dbUser, dbPass);
+        AccountRepository accountRepo = new JdbcAccountRepository(dataSource);
+        MoonMissionRepository missionRepo = new JdbcMoonMissionRepository(dataSource);
+
+        try (Scanner scanner = new Scanner(System.in)) {
+
+            while (true) {
+
+                Boolean result = login(scanner, accountRepo);
+
+                if (result == null) {
+                    System.out.println("Exiting...");
+                    return;
+                }
+
+                if (result) {
+                    handleMenu(scanner, accountRepo, missionRepo);
+                    return;
+                }
+
+                System.out.println("Try again or enter 0 to exit.");
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        //Todo: Starting point for your code
+    }
+
+    private Boolean login(Scanner scanner, AccountRepository accountRepo) throws SQLException {
+        System.out.print("Username (or enter 0 to exit): ");
+        String username = scanner.nextLine();
+
+        if (username.equals("0")) {
+            return null;
+        }
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        if (accountRepo.validateLogin(username, password)) {
+            return true;
+        } else {
+            System.out.println("Invalid username or password");
+            return false;
+        }
+    }
+
+    private void handleMenu(Scanner scanner, AccountRepository accountRepo,
+                            MoonMissionRepository missionRepo) throws SQLException {
+        while (true) {
+            System.out.println("\n----=== MENU ===----");
+            System.out.println("1) List moon missions");
+            System.out.println("2) Get a moon mission by mission ID");
+            System.out.println("3) Count missions for a given year");
+            System.out.println("4) Create an account");
+            System.out.println("5) Update an account password");
+            System.out.println("6) Delete an account");
+            System.out.println("0) Exit");
+            System.out.print("Choose an option: ");
+
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1" -> listMoonMissions(missionRepo);
+                case "2" -> getMissionById(scanner, missionRepo);
+                case "3" -> countMissionsByYear(scanner, missionRepo);
+                case "4" -> createAccount(scanner, accountRepo);
+                case "5" -> updatePassword(scanner, accountRepo);
+                case "6" -> deleteAccount(scanner, accountRepo);
+                case "0" -> {
+                    System.out.println("Exiting...");
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private void listMoonMissions(MoonMissionRepository repo) throws SQLException {
+        List<String> spacecrafts = repo.listAllMoonMissions();
+        System.out.println("\nMoon Missions:");
+        for (String spacecraft : spacecrafts) {
+            System.out.println("- " + spacecraft);
+        }
+    }
+
+    private void getMissionById(Scanner scanner, MoonMissionRepository repo) throws SQLException {
+        System.out.print("Enter mission ID: ");
+        int missionId = Integer.parseInt(scanner.nextLine());
+
+        Optional<MoonMission> mission = repo.getMissionById(missionId);
+        if (mission.isPresent()) {
+            System.out.println("\n" + mission.get());
+        } else {
+            System.out.println("Mission not found");
+        }
+    }
+
+    private void countMissionsByYear(Scanner scanner, MoonMissionRepository repo) throws SQLException {
+        System.out.print("Enter year: ");
+        int year = Integer.parseInt(scanner.nextLine());
+
+        int count = repo.countMissionsByYear(year);
+        System.out.println("Number of missions in " + year + ": " + count);
+    }
+
+    private void createAccount(Scanner scanner, AccountRepository repo) throws SQLException {
+        System.out.print("First name: ");
+        String firstName = scanner.nextLine();
+
+        System.out.print("Last name: ");
+        String lastName = scanner.nextLine();
+
+        System.out.print("SSN: ");
+        String ssn = scanner.nextLine();
+
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
+
+        long userId = repo.createAccount(firstName, lastName, ssn, password);
+        System.out.println("Account created with user ID: " + userId);
+    }
+
+    private void updatePassword(Scanner scanner, AccountRepository repo) throws SQLException {
+        System.out.print("User ID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        System.out.print("New password: ");
+        String newPassword = scanner.nextLine();
+
+        repo.updatePassword(userId, newPassword);
+        System.out.println("Password updated successfully");
+    }
+
+    private void deleteAccount(Scanner scanner, AccountRepository repo) throws SQLException {
+        System.out.print("User ID: ");
+        int userId = Integer.parseInt(scanner.nextLine());
+
+        repo.deleteAccount(userId);
+        System.out.println("Account deleted successfully");
     }
 
     /**
