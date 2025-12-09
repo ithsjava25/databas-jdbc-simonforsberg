@@ -147,19 +147,39 @@ public class Main {
 
     private void createAccount(Scanner scanner, AccountRepository repo) throws SQLException {
         System.out.print("First name: ");
-        String firstName = scanner.nextLine();
+        String firstName = scanner.nextLine().trim();
+        if (firstName.isEmpty()) {
+            System.out.println("First name cannot be empty. Please try again.");
+            return;
+        }
 
         System.out.print("Last name: ");
-        String lastName = scanner.nextLine();
+        String lastName = scanner.nextLine().trim();
+        if (lastName.isEmpty()) {
+            System.out.println("Last name cannot be empty. Please try again.");
+            return;
+        }
 
         System.out.print("SSN (YYMMDD-XXXX): ");
-        String ssn = scanner.nextLine();
+        String ssn = scanner.nextLine().trim();
+        if (!ssn.matches("\\d{6}-\\d{4}")) {
+            System.out.println("Invalid SSN format. Use YYMMDD-XXXX. Please try again.");
+            return;
+        }
 
         System.out.print("Password: ");
         String password = scanner.nextLine();
+        if (password.length() < 8) {
+            System.out.println("Password must be at least 8 characters. Please try again.");
+            return;
+        }
 
-        long userId = repo.createAccount(password, firstName, lastName, ssn);
-        System.out.println("Account created with user ID: " + userId);
+        try {
+            int userId = repo.createAccount(password, firstName, lastName, ssn);
+            System.out.println("Account created with user ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Error creating account: " + e.getMessage());
+        }
     }
 
     private void updatePassword(Scanner scanner, AccountRepository repo) throws SQLException {
