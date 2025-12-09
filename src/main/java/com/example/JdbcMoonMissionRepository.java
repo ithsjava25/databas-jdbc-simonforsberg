@@ -46,19 +46,24 @@ public class JdbcMoonMissionRepository implements MoonMissionRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
+                    java.sql.Date launchDateSql = rs.getDate("launch_date");
                     MoonMission mission = new MoonMission(
                             rs.getInt("mission_id"),
-                            rs.getString("spacecraft"),
-                            rs.getDate("launch_date") != null ? rs.getDate("launch_date").toLocalDate() : null,
-                            rs.getString("operator"),
-                            rs.getString("mission_type"),
-                            rs.getString("outcome")
+                            defaultIfNull(rs.getString("spacecraft")),
+                            launchDateSql != null ? launchDateSql.toLocalDate() : null,
+                            defaultIfNull(rs.getString("operator")),
+                            defaultIfNull(rs.getString("mission_type")),
+                            defaultIfNull(rs.getString("outcome"))
                     );
                     return Optional.of(mission);
                 }
                 return Optional.empty();
             }
         }
+    }
+
+    private static String defaultIfNull(String value) {
+        return value != null ? value : "";
     }
 
     @Override
