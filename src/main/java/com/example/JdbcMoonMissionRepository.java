@@ -26,7 +26,10 @@ public class JdbcMoonMissionRepository implements MoonMissionRepository {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                spacecrafts.add(rs.getString("spacecraft"));
+                String spacecraft = rs.getString("spacecraft");
+                if (spacecraft != null) {
+                    spacecrafts.add(spacecraft);
+                }
             }
         }
         return spacecrafts;
@@ -46,7 +49,7 @@ public class JdbcMoonMissionRepository implements MoonMissionRepository {
                     MoonMission mission = new MoonMission(
                             rs.getInt("mission_id"),
                             rs.getString("spacecraft"),
-                            rs.getDate("launch_date").toLocalDate(),
+                            rs.getDate("launch_date") != null ? rs.getDate("launch_date").toLocalDate() : null,
                             rs.getString("operator"),
                             rs.getString("mission_type"),
                             rs.getString("outcome")
@@ -60,7 +63,7 @@ public class JdbcMoonMissionRepository implements MoonMissionRepository {
 
     @Override
     public int countMissionsByYear(int year) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM moon_mission WHERE YEAR(launch_date) = ?";
+        String sql = "SELECT COUNT(*) FROM moon_mission WHERE EXTRACT(YEAR FROM launch_date) = ?";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

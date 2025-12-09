@@ -49,17 +49,19 @@ public class SimpleDriverManagerDataSource implements DataSource {
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        return null;
+        throw new SQLFeatureNotSupportedException("getParentLogger not supported");
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return null;
-        // throw new SQLException("Not supported");
+        if (iface.isAssignableFrom(getClass())) {
+            return iface.cast(this);
+        }
+        throw new SQLException("Cannot unwrap to " + iface.getName());
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return false;
+        return iface.isAssignableFrom(getClass());
     }
 }

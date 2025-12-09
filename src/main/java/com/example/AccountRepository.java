@@ -6,10 +6,11 @@ public interface AccountRepository {
 
     /**
      * Checks login credentials
-     * @param username
-     * @param password
-     * @return
-     * @throws SQLException
+     *
+     * @param username the username to validate
+     * @param password the password to validate
+     * @return true if credentials are valid, false otherwise
+     * @throws SQLException if a database access error occurs
      */
     boolean validateLogin(String username, String password) throws SQLException;
 

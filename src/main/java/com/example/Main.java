@@ -116,8 +116,13 @@ public class Main {
 
     private void getMissionById(Scanner scanner, MoonMissionRepository repo) throws SQLException {
         System.out.print("Enter mission ID: ");
-        int missionId = Integer.parseInt(scanner.nextLine());
-
+        int missionId;
+        try {
+            missionId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please try again.");
+            return;
+        }
         Optional<MoonMission> mission = repo.getMissionById(missionId);
         if (mission.isPresent()) {
             System.out.println("\n" + mission.get());
@@ -128,7 +133,13 @@ public class Main {
 
     private void countMissionsByYear(Scanner scanner, MoonMissionRepository repo) throws SQLException {
         System.out.print("Enter year: ");
-        int year = Integer.parseInt(scanner.nextLine());
+        int year;
+        try {
+            year = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please try again.");
+            return;
+        }
 
         int count = repo.countMissionsByYear(year);
         System.out.println("Number of missions in " + year + ": " + count);
@@ -141,19 +152,25 @@ public class Main {
         System.out.print("Last name: ");
         String lastName = scanner.nextLine();
 
-        System.out.print("SSN: ");
+        System.out.print("SSN (YYMMDD-XXXX): ");
         String ssn = scanner.nextLine();
 
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        long userId = repo.createAccount(firstName, lastName, ssn, password);
+        long userId = repo.createAccount(password, firstName, lastName, ssn);
         System.out.println("Account created with user ID: " + userId);
     }
 
     private void updatePassword(Scanner scanner, AccountRepository repo) throws SQLException {
         System.out.print("User ID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
+        int userId;
+        try {
+            userId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please try again.");
+            return;
+        }
 
         System.out.print("New password: ");
         String newPassword = scanner.nextLine();
@@ -164,7 +181,13 @@ public class Main {
 
     private void deleteAccount(Scanner scanner, AccountRepository repo) throws SQLException {
         System.out.print("User ID: ");
-        int userId = Integer.parseInt(scanner.nextLine());
+        int userId;
+        try {
+            userId = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please try again.");
+            return;
+        }
 
         repo.deleteAccount(userId);
         System.out.println("Account deleted successfully");

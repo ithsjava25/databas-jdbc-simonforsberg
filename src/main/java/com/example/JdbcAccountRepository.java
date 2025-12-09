@@ -27,7 +27,7 @@ public class JdbcAccountRepository implements AccountRepository {
     }
 
     @Override
-    public int createAccount(String firstName, String lastName, String ssn, String password) throws SQLException {
+    public int createAccount(String password, String firstName, String lastName, String ssn) throws SQLException {
         String sql = "INSERT INTO account(password, first_name, last_name, ssn) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = dataSource.getConnection();
@@ -59,7 +59,10 @@ public class JdbcAccountRepository implements AccountRepository {
             stmt.setString(1, newPassword);
             stmt.setInt(2, userId);
 
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No account found with user ID: " + userId);
+            }
         }
     }
 
@@ -71,7 +74,10 @@ public class JdbcAccountRepository implements AccountRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No account found with user ID: " + userId);
+            }
         }
     }
 }
