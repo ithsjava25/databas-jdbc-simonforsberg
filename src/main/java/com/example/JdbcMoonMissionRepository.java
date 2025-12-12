@@ -9,7 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JDBC-based implementation of {@link MoonMissionRepository}.
+ *
+ * <p>This implementation uses a {@link DataSource} to obtain database connections
+ * and executes SQL statements against the {@code moon_mission} table.</p>
+ *
+ * <p>All methods use {@link PreparedStatement} to prevent SQL injection attacks.</p>
+ */
 public class JdbcMoonMissionRepository implements MoonMissionRepository {
+
     private final DataSource dataSource;
 
     public JdbcMoonMissionRepository(DataSource dataSource) {
@@ -62,8 +71,17 @@ public class JdbcMoonMissionRepository implements MoonMissionRepository {
         }
     }
 
-    private static String defaultIfNull(String value) {
-        return value != null ? value : "";
+    /**
+     * Returns the given string, or an empty string if it is {@code null}.
+     *
+     * <p>This utility method prevents {@code NullPointerException}s when
+     * constructing domain objects from database results.</p>
+     *
+     * @param string the string to check
+     * @return the original string if not null, otherwise an empty string
+     */
+    private static String defaultIfNull(String string) {
+        return string != null ? string : "";
     }
 
     @Override

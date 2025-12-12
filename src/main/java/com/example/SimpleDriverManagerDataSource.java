@@ -8,11 +8,21 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
+/**
+ * Simple {@link DataSource} implementation that uses {@link DriverManager} to create database connections.
+ */
 public class SimpleDriverManagerDataSource implements DataSource {
     private final String url;
     private final String username;
     private final String password;
 
+    /**
+     * Creates a new data source with the given connection parameters.
+     *
+     * @param url      the JDBC URL
+     * @param username the database username
+     * @param password the database password
+     */
     public SimpleDriverManagerDataSource(String url, String username, String password) {
         this.url = url;
         this.username = username;

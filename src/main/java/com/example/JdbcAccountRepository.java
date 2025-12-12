@@ -3,7 +3,16 @@ package com.example;
 import javax.sql.DataSource;
 import java.sql.*;
 
+/**
+ * JDBC-based implementation of {@link AccountRepository}.
+ *
+ * <p>This implementation uses a {@link DataSource} to obtain database connections
+ * and executes SQL statements against the {@code account} table.</p>
+ *
+ * <p>All methods use {@link PreparedStatement} to prevent SQL injection attacks.</p>
+ */
 public class JdbcAccountRepository implements AccountRepository {
+
     private final DataSource dataSource;
 
     public JdbcAccountRepository(DataSource dataSource) {
@@ -44,7 +53,7 @@ public class JdbcAccountRepository implements AccountRepository {
                 if (keys.next()) {
                     return keys.getInt(1);
                 }
-                throw new SQLException("Failed to get generated key");
+                throw new SQLException("Failed to get generated key.");
             }
         }
     }

@@ -5,41 +5,41 @@ import java.sql.SQLException;
 public interface AccountRepository {
 
     /**
-     * Checks login credentials
+     * Validates login credentials against the account table.
      *
      * @param username the username to validate
      * @param password the password to validate
-     * @return true if credentials are valid, false otherwise
+     * @return {@code true} if credentials are valid, {@code false} otherwise
      * @throws SQLException if a database access error occurs
      */
     boolean validateLogin(String username, String password) throws SQLException;
 
     /**
-     * Creates a new account
+     * Creates a new account.
      *
-     * @param password
-     * @param firstName
-     * @param lastName
-     * @param ssn
-     * @return
-     * @throws SQLException
+     * @param password  the account password
+     * @param firstName the users first name
+     * @param lastName  the users last name
+     * @param ssn       the users social security number
+     * @return the generated user_id for the new account
+     * @throws SQLException if a database access error occurs
      */
     int createAccount(String password, String firstName, String lastName, String ssn) throws SQLException;
 
     /**
-     * Updates password for an existing account
+     * Updates the password of an existing account.
      *
-     * @param userId
-     * @param newPassword
-     * @throws SQLException
+     * @param userId      the ID of the account to update
+     * @param newPassword the new password
+     * @throws SQLException if a database access error occurs
      */
     void updatePassword(int userId, String newPassword) throws SQLException;
 
     /**
-     * Delete an account
+     * Deletes an account.
      *
-     * @param userId
-     * @throws SQLException
+     * @param userId the ID of the account to delete
+     * @throws SQLException if a database access error occurs
      */
     void deleteAccount(int userId) throws SQLException;
 

@@ -7,8 +7,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
+/**
+ * Main application class for the Moon Mission CLI.
+ *
+ * <p>This class provides a console-based interface for managing moon missions and user accounts.
+ * It supports development mode using Testcontainers for easy local testing.</p>
+ *
+ * @see AccountRepository
+ * @see MoonMissionRepository
+ */
 public class Main {
 
+    /**
+     * Entry point and main application controller.
+     *
+     * <p>Handles development mode initialization, loads database configuration from
+     * system properties or environment variables, constructs repositories, and
+     * provides a simple console-based menu for interacting with the application.</p>
+     *
+     * <p>In development mode, a temporary MySQL database is started using Testcontainers.</p>
+     */
     static void main(String[] args) {
         if (isDevMode(args)) {
             DevDatabaseInitializer.start();
@@ -16,6 +34,12 @@ public class Main {
         new Main().run();
     }
 
+    /**
+     * Initializes the application, resolves database configuration,
+     * creates repository instances, and starts the interactive console loop.
+     *
+     * @throws IllegalStateException if required DB configuration is missing
+     */
     public void run() {
         // Resolve DB settings with precedence: System properties -> Environment variables
         String jdbcUrl = resolveConfig("APP_JDBC_URL", "APP_JDBC_URL");
@@ -28,6 +52,7 @@ public class Main {
                             "as system properties (-Dkey=value) or environment variables.");
         }
 
+        // Create DatasSource and Repositories
         DataSource dataSource = new SimpleDriverManagerDataSource(jdbcUrl, dbUser, dbPass);
         AccountRepository accountRepo = new JdbcAccountRepository(dataSource);
         MoonMissionRepository missionRepo = new JdbcMoonMissionRepository(dataSource);
