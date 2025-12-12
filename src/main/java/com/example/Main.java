@@ -27,7 +27,7 @@ public class Main {
      *
      * <p>In development mode, a temporary MySQL database is started using Testcontainers.</p>
      */
-    static void main(String[] args) {
+    public static void main(String[] args) {
         if (isDevMode(args)) {
             DevDatabaseInitializer.start();
         }
@@ -52,7 +52,7 @@ public class Main {
                             "as system properties (-Dkey=value) or environment variables.");
         }
 
-        // Create DatasSource and Repositories
+        // Create DataSource and Repositories
         DataSource dataSource = new SimpleDriverManagerDataSource(jdbcUrl, dbUser, dbPass);
         AccountRepository accountRepo = new JdbcAccountRepository(dataSource);
         MoonMissionRepository missionRepo = new JdbcMoonMissionRepository(dataSource);
@@ -174,14 +174,14 @@ public class Main {
         System.out.print("First name: ");
         String firstName = scanner.nextLine().trim();
         if (firstName.isEmpty()) {
-            System.out.println("First name cannot be empty. Please try again.");
+            System.out.println("First name can't be empty. Please try again.");
             return;
         }
 
         System.out.print("Last name: ");
         String lastName = scanner.nextLine().trim();
         if (lastName.isEmpty()) {
-            System.out.println("Last name cannot be empty. Please try again.");
+            System.out.println("Last name can't be empty. Please try again.");
             return;
         }
 
@@ -194,8 +194,8 @@ public class Main {
 
         System.out.print("Password: ");
         String password = scanner.nextLine();
-        if (password.length() < 8) {
-            System.out.println("Password must be at least 8 characters. Please try again.");
+        if (password.isEmpty()) {
+            System.out.println("Password can't be empty. Please try again.");
             return;
         }
 
